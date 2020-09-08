@@ -1,4 +1,4 @@
-package Tests;
+package Utils;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 
 public class TestBase {
 	WebDriver driver;
-	Properties prop;
+	private static Properties prop;
 
 	@BeforeMethod
 	public void setup() throws MalformedURLException {   
@@ -59,27 +59,27 @@ public class TestBase {
 		}
 
 	}
-	
+
 	@AfterMethod()
 	public void tearDown() {
 		driver.quit();
 	}
-	
+
 	private void getSystemProperties() {
-		
-		  FileReader configReader;
-		  FileReader envReader;
+
+		FileReader configReader;
+		FileReader envReader;
 		try {
 			configReader = new FileReader("./Parameters/config.properties");
-		 
-	      
-		    prop=new Properties();  
-		    prop.load(configReader); 
-		    
-		    String env=(String) prop.get("Environment");
+
+
+			prop=new Properties();  
+			prop.load(configReader); 
+
+			String env=(String) prop.get("Environment");
 			envReader = new FileReader("./Parameters/"+env.toLowerCase()+".properties");
 			prop.load(envReader);
-		    
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,16 +92,23 @@ public class TestBase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		      
+
 	}
 
-	
-	
-	
+	public static String getProperty(String key) {
+		return prop.getProperty(key);
+	}
+
+	public static void setProperty(String key, String value) {
+		prop.setProperty(key, value);
+	}
+
+
+
 	@Test(invocationCount=1, threadPoolSize=1)
 	public void remoteTest_firefox() throws MalformedURLException {
 
-		driver.get("https://social.ndtv.com/static/Weather/report/");
+		driver.get(TestBase.getProperty("WebUrl"));
 
 	}
 
