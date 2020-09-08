@@ -1,7 +1,11 @@
 package Tests;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
@@ -15,10 +19,12 @@ import org.testng.annotations.Test;
 
 public class TestBase {
 	WebDriver driver;
+	Properties prop;
 
 	@BeforeMethod
 	public void setup() throws MalformedURLException {   
 
+		getSystemProperties();
 		String browser=System.getProperty("browser","firefox");
 		String execution=System.getProperty("executions","local");
 		DesiredCapabilities caps=new DesiredCapabilities();
@@ -52,16 +58,46 @@ public class TestBase {
 			}
 		}
 
-
-
-
 	}
 	
 	@AfterMethod()
 	public void tearDown() {
 		driver.quit();
 	}
+	
+	private void getSystemProperties() {
+		
+		  FileReader configReader;
+		  FileReader envReader;
+		try {
+			configReader = new FileReader("./Parameters/config.properties");
+		 
+	      
+		    prop=new Properties();  
+		    prop.load(configReader); 
+		    
+		    String env=(String) prop.get("Environment");
+			envReader = new FileReader("./Parameters/"+env.toLowerCase()+".properties");
+			prop.load(envReader);
+		    
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		      
+	}
 
+	
+	
+	
 	@Test(invocationCount=1, threadPoolSize=1)
 	public void remoteTest_firefox() throws MalformedURLException {
 
